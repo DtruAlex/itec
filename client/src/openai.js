@@ -1,6 +1,7 @@
 import axios from "axios";
 const apiKey = process.env.OPENAI_API_KEY;
 
+
 let conversation = [];
 
 export async function sendMsgToOpenAI(message) {
