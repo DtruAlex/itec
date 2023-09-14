@@ -15,64 +15,56 @@ function App() {
   const msgEnd = useRef(null);
 
   const [input, setInput] = useState("");
-  const [messages, setMessages] = useState([
-    {
-    text: "Hi. I am Replica. A clone of ChatGPT. How can I assist you today?",
-    isBot: true,
-    }]);
+  const [messages, setMessages] = useState([{
+      text: "Hi. I am Replica. A clone of ChatGPT. How can I assist you today?",
+      isBot: true,
+  }]);
   
-    const typeText = (element, text) => {
-      let index = 0;
-  
-      let interval = setInterval(() => {
-        if (index < text.length) {
-          element.innerHTML += text.charAt(index);
-          index++;
-        } else {
-          clearInterval(interval);
-        }
-      }, 20);
-    };
+  const typeText = (element, text) => {
+    let index = 0;
 
-
-    useEffect(() => {
-      msgEnd.current.scrollIntoView();
-    
-      // Find the most recent element with the "typing-animation" class and apply the typing effect
-      const elements = document.querySelectorAll('.typing-animation');
-      const latestElement = elements[elements.length - 1];
-    
-      if (latestElement) {
-        const text = latestElement.textContent;
-        latestElement.textContent = ''; // Clear the text content
-        typeText(latestElement, text); // Apply typing animation
+    let interval = setInterval(() => {
+      if (index < text.length) {
+        element.innerHTML += text.charAt(index);
+        index++;
+      } else {
+        clearInterval(interval);
       }
-    }, [messages]);
+    }, 20);
+  };
 
-    const handleSend = async () => {
-      const text = input;
-      setInput('');
-    
-      // Display the user's message
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text, isBot: false },
-      ]);
 
-      // Get the bot's response
-      const res = await sendMsgToOpenAI(text);
-    
-      // Simulate typing animation for the bot
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: res, isBot: true, typingAnimation: true },
-      ]);
-    
-      // Simulate a pause in typing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+  useEffect(() => {
+    msgEnd.current.scrollIntoView();
+  
+    const elements = document.querySelectorAll('.typing-animation');
+    const latestElement = elements[elements.length - 1];
+  
+    if (latestElement) {
+      const text = latestElement.textContent;
+      latestElement.textContent = ''; 
+      typeText(latestElement, text);
+    }
+  }, [messages]);
 
-      
-    };
+  const handleSend = async () => {
+    const text = input;
+    setInput('');
+  
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text, isBot: false },
+    ]);
+
+    const res = await sendMsgToOpenAI(text);
+  
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: res, isBot: true, typingAnimation: true },
+    ]);
+  
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  };
     
     
   const handleEnter = async (e)=> {
@@ -86,7 +78,7 @@ function App() {
       ...messages,
       {text, isBot:false}
     ])
-    const res = await sendMsgToOpenAI(input);
+    const res = await sendMsgToOpenAI(text);
     setMessages([
       ...messages,
       { text, isBot: false },
@@ -105,6 +97,8 @@ function App() {
           <div className="upperSideBottom">
             <button className="query" onClick={handleQuery} value={"What is Programming?"}><img src={msgIcon} alt="Query" />What is Programming?</button>
             <button className="query" onClick={handleQuery}  value={"How to use API?"}><img src={msgIcon} alt="Query" />How to use an API?</button>
+            <button className="query" onClick={handleQuery}  value={"Tell me a joke."}><img src={msgIcon} alt="Query" />Tell me a joke.</button>
+            <button className="query" onClick={handleQuery}  value={"Provide me a code snippet."}><img src={msgIcon} alt="Query" />Provide me a code snippet.</button>
           </div>
 
         </div>
@@ -124,16 +118,16 @@ function App() {
         {messages.map((message, i) => (
           <div
             key={i}
-            className={message.isBot ? "chat bot" : "chat"}
+            className={`chat ${message.isBot ? 'bot' : ''} ${
+              message.isBot && i > 0 ? 'bot-response' : ''
+            }`}
           >
-            <img
-              className="chatImg"
-              src={message.isBot ? gptImgLogo : userIcon}
-              alt=""
-            />
-            <p className="txt typing-animation">
-              {message.text}
-            </p>
+            <img className="chatImg" src={message.isBot ? gptImgLogo : userIcon} alt="" />
+            {message.text && (
+              <p className="txt typing-animation" style={{ whiteSpace: 'pre-line' }}>
+                {message.text.trim()}
+              </p>
+            )}
           </div>
         ))}
 

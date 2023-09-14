@@ -1,23 +1,37 @@
 import axios from "axios";
+const apiKey = process.env.OPENAI_API_KEY;
 
-const apiKey="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"
+let conversation = [];
 
 export async function sendMsgToOpenAI(message) {
   try {
-    const response = await axios.post('https://api.openai.com/v1/completions', {
-      model: "text-davinci-003",
-      prompt: message,
-      max_tokens: 256,
-      temperature: 1,
-    }, {
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    });
+    conversation.push({ role: "system", content: "You are a helpful assistant." });
+    conversation.push({ role: "user", content: message });
 
-    return response.data.choices[0].text;
+    const response = await axios.post(
+      "https://api.openai.com/v1/chat/completions",
+      {
+        messages: conversation,
+        model: "gpt-3.5-turbo",
+        max_tokens: 256
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const reply =
+      response.data.choices[0].message.content ||
+      "I'm sorry, I couldn't understand your request.";
+
+    conversation.push({ role: "assistant", content: reply });
+
+    console.log(reply);
+    return reply;
   } catch (error) {
-    console.error('Error calling OpenAI API:', error);
+    console.error("Error calling OpenAI API:", error);
   }
 }
