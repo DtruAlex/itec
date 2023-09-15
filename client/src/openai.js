@@ -1,7 +1,6 @@
 import axios from "axios";
 const apiKey = process.env.OPENAI_API_KEY;
 
-
 let conversation = [];
 
 export async function sendMsgToOpenAI(message) {
@@ -14,7 +13,8 @@ export async function sendMsgToOpenAI(message) {
       {
         messages: conversation,
         model: "gpt-3.5-turbo",
-        max_tokens: 256
+        max_tokens: 2000,
+        temperature: 1
       },
       {
         headers: {

@@ -11,6 +11,7 @@ import gptImgLogo from './assets/chatgptLogo.svg';
 import { sendMsgToOpenAI } from './openai';
 import { useEffect, useRef, useState } from 'react';
 
+
 function App() {
   const msgEnd = useRef(null);
 
@@ -19,6 +20,32 @@ function App() {
       text: "Hi. I am Replica. A clone of ChatGPT. How can I assist you today?",
       isBot: true,
   }]);
+  const [showSidebar, setShowSidebar] = useState(true);
+
+  const toggleSidebar = () => {
+    setShowSidebar(!showSidebar);
+  };
+
+  const mediaQuery = window.matchMedia('(max-width: 768px)');
+
+  useEffect(() => {
+    const handleMediaChange = (e) => {
+      if (e.matches) {
+        setShowSidebar(false);
+      } else {
+        setShowSidebar(true);
+      }
+    };
+  
+    const mediaQuery = window.matchMedia('(max-width: 768px)');
+    mediaQuery.addListener(handleMediaChange);
+    handleMediaChange(mediaQuery);
+  
+    return () => {
+      mediaQuery.removeListener(handleMediaChange);
+    };
+  }, []);
+  
   
   const typeText = (element, text) => {
     let index = 0;
@@ -30,40 +57,54 @@ function App() {
       } else {
         clearInterval(interval);
       }
-    }, 20);
+    }, 10);
   };
 
 
   useEffect(() => {
-    msgEnd.current.scrollIntoView();
-  
+    const scrollChatToBottom = () => {
+      msgEnd.current.scrollIntoView({ behavior: "smooth" });
+    };
     const elements = document.querySelectorAll('.typing-animation');
     const latestElement = elements[elements.length - 1];
-  
+
     if (latestElement) {
       const text = latestElement.textContent;
-      latestElement.textContent = ''; 
+      latestElement.textContent = '';
       typeText(latestElement, text);
+      setTimeout(scrollChatToBottom, text.length * 10);
+    } else {
+      scrollChatToBottom();
     }
   }, [messages]);
 
   const handleSend = async () => {
     const text = input;
     setInput('');
-  
+    
     setMessages((prevMessages) => [
       ...prevMessages,
       { text, isBot: false },
     ]);
-
-    const res = await sendMsgToOpenAI(text);
   
+    const res = await sendMsgToOpenAI(text);
     setMessages((prevMessages) => [
       ...prevMessages,
       { text: res, isBot: true, typingAnimation: true },
     ]);
+    const chatContainer = document.querySelector('.chats');
   
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const checkAnimationInterval = setInterval(() => {
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+  
+      const latestBotMessageIndex = messages.length - 1;
+      if (latestBotMessageIndex >= 0) {
+        const latestBotMessage = messages[latestBotMessageIndex];
+        if (!latestBotMessage.typingAnimation) {
+          clearInterval(checkAnimationInterval);
+        }
+      }
+    }, 100);
   };
     
     
@@ -87,33 +128,45 @@ function App() {
   }
 
   return (
-    <div className="App">
+    <div className={`App ${showSidebar ? 'sidebar-open' : ''}`}>
 
-      <div className="sideBar">
+       {/* Hamburger Button */}
+      {mediaQuery.matches && (
+        <button className="hamburger" onClick={toggleSidebar}>
+          &#9776;
+        </button>
+      )}
 
-        <div className="upperSide">
-          <div className="upperSideTop"><img src={gptLogo} alt="Logo" className="logo" /><span className="brand">Replica</span></div>
-          <button className="midBtn" onClick={()=>{window.location.reload()}}><img src={addBtn} alt="" className="addBtn" />New Chat</button>
-          <div className="upperSideBottom">
-            <button className="query" onClick={handleQuery} value={"What is Programming?"}><img src={msgIcon} alt="Query" />What is Programming?</button>
-            <button className="query" onClick={handleQuery}  value={"How to use API?"}><img src={msgIcon} alt="Query" />How to use an API?</button>
-            <button className="query" onClick={handleQuery}  value={"Tell me a joke."}><img src={msgIcon} alt="Query" />Tell me a joke.</button>
-            <button className="query" onClick={handleQuery}  value={"Provide me a code snippet."}><img src={msgIcon} alt="Query" />Provide me a code snippet.</button>
+      <div className={`sidebar-container ${showSidebar ? 'sidebar-open' : ''}`}>
+        <div className="sideBar">
+
+          <div className="upperSide">
+            <div className="upperSideTop"><img src={gptLogo} alt="Logo" className="logo" /><span className="brand">Replica</span></div>
+            <button className="midBtn" onClick={()=>{window.location.reload()}}><img src={addBtn} alt="" className="addBtn" />New Chat</button>
+            <div className="upperSideBottom">
+              <button className="query" onClick={handleQuery} value={"What is Programming?"}><img src={msgIcon} alt="Query" />What is Programming?</button>
+              <button className="query" onClick={handleQuery}  value={"How to use API?"}><img src={msgIcon} alt="Query" />How to use an API?</button>
+              <button className="query" onClick={handleQuery}  value={"Tell me a joke."}><img src={msgIcon} alt="Query" />Tell me a joke.</button>
+              <button className="query" onClick={handleQuery}  value={"Provide me a code snippet."}><img src={msgIcon} alt="Query" />Provide me a code snippet.</button>
+            </div>
+
+          </div>
+
+          <div className="lowerSide">
+            <a href="/" className='links'><div className="listItems"><img src={home} alt="Home" className="listItemsImg" />Home</div></a>
+            <a href="/" className='links'><div className="listItems"><img src={saved} alt="Saved" className="listItemsImg" />Save</div></a>
+            <a href="/" className='links'><div className="listItems"><img src={rocket} alt="Projects" className="listItemsImg" />Upgrade to Pro</div></a>
           </div>
 
         </div>
 
-        <div className="lowerSide">
-          <div className="listItems"><img src={home} alt="Home" className="listItemsImg" />Home</div>
-          <div className="listItems"><img src={saved} alt="Saved" className="listItemsImg" />Save</div>
-          <div className="listItems"><img src={rocket} alt="Projects" className="listItemsImg" />Upgrade to Pro</div>
-        </div>
-
       </div>
 
-      <div className="main">
+
+
+      <div className={`main ${showSidebar ? 'main-with-sidebar' : ''}`}>
         <div className="chats">
-          
+        {showSidebar && <div className="overlay" onClick={toggleSidebar}></div>}
     
         {messages.map((message, i) => (
           <div
@@ -143,6 +196,7 @@ function App() {
       </div>
 
     </div>
+    
   );
 }
 
