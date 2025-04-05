@@ -1,13 +1,12 @@
 import './App.css';
-import gptLogo from './assets/chatgpt.svg';
 import addBtn from './assets/add-30.png';
-import msgIcon from './assets/message.svg';
-import home from './assets/home.svg';
+import sleep from './assets/sleep.svg';
 import saved from './assets/bookmark.svg';
+import dna from './assets/dna.svg';
 import rocket from './assets/rocket.svg';
 import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
-import gptImgLogo from './assets/chatgptLogo.svg';
+import logo from './assets/logo.svg';
 import { sendMsgToOpenAI } from './openai';
 import { useEffect, useRef, useState } from 'react';
 
@@ -17,7 +16,7 @@ function App() {
 
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([{
-      text: "Hi. I am Replica. A clone of ChatGPT. How can I assist you today?",
+      text: "Hi. I'm H.A.D, your Health Assistent Diagnoser. How can I assist you today?",
       isBot: true,
   }]);
   const [showSidebar, setShowSidebar] = useState(true);
@@ -141,20 +140,15 @@ function App() {
         <div className="sideBar">
 
           <div className="upperSide">
-            <div className="upperSideTop"><img src={gptLogo} alt="Logo" className="logo" /><span className="brand">Replica</span></div>
+            <div className="upperSideTop"><img src={logo} style={{ width:"40px",}} alt="Logo" className="logo" /><span className="brand">H.A.D.</span></div>
             <button className="midBtn" onClick={()=>{window.location.reload()}}><img src={addBtn} alt="" className="addBtn" />New Chat</button>
-            <div className="upperSideBottom">
-              <button className="query" onClick={handleQuery} value={"What is Programming?"}><img src={msgIcon} alt="Query" />What is Programming?</button>
-              <button className="query" onClick={handleQuery}  value={"How to use API?"}><img src={msgIcon} alt="Query" />How to use an API?</button>
-              <button className="query" onClick={handleQuery}  value={"Tell me a joke."}><img src={msgIcon} alt="Query" />Tell me a joke.</button>
-              <button className="query" onClick={handleQuery}  value={"Provide me a code snippet."}><img src={msgIcon} alt="Query" />Provide me a code snippet.</button>
-            </div>
+
 
           </div>
 
           <div className="lowerSide">
-            <a href="/" className='links'><div className="listItems"><img src={home} alt="Home" className="listItemsImg" />Home</div></a>
-            <a href="/" className='links'><div className="listItems"><img src={saved} alt="Saved" className="listItemsImg" />Save</div></a>
+            <a href="/" className='links'><div className="listItems"><img src={sleep} alt="SleepDiagnostics" className="listItemsImg" />Sleep Problems Diagnoser</div></a>
+            <a href="/" className='links'><div className="listItems"><img src={dna} alt="CancerDetector" className="listItemsImg" />Cancer Detector</div></a>
             <a href="/" className='links'><div className="listItems"><img src={rocket} alt="Projects" className="listItemsImg" />Upgrade to Pro</div></a>
           </div>
 
@@ -175,7 +169,7 @@ function App() {
               message.isBot && i > 0 ? 'bot-response' : ''
             }`}
           >
-            <img className="chatImg" src={message.isBot ? gptImgLogo : userIcon} alt="" />
+            <img className="chatImg" src={message.isBot ? logo : userIcon} alt="" />
             {message.text && (
               <p className="txt typing-animation" style={{ whiteSpace: 'pre-line' }}>
                 {message.text.trim()}
@@ -191,7 +185,7 @@ function App() {
           <div className="inp">
             <input type="text" placeholder="Send a message" value={input} onKeyDown={handleEnter} onChange={(e) => {setInput(e.target.value)}}/> <button className="send" onClick={handleSend}><img src={sendBtn} alt="Send" /></button>
           </div>
-          <p>Trajector Medical</p>
+          <p>H.A.D - The advice given is not medical advice, please consult a doctor </p>
         </div>
       </div>
 

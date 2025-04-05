@@ -145,11 +145,11 @@ a.links img {
 }
 
 .listItems:nth-child(1)>.listItemsImg {
-   margin-right: 0.5rem;
+   margin-right: 2.5rem;
 }
 
 .listItems:nth-child(3)>.listItemsImg {
-   margin-right: 0.75rem;
+   margin-right: 2.5rem;
 }
 
 .main {
@@ -328,7 +328,7 @@ a.links img {
    left: 0;
    width: 100%;
    height: 100%;
-   background: rgba(0, 0, 0, 0.7);
+   background: rgba(179, 227, 255, 0.7);
    z-index: 9998;
  }
  
