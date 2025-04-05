@@ -33,7 +33,6 @@ function ImageConvertor() {
                 accept="image/*"
                 onChange={handleImageUpload}
                 id="upload-button"
-                style={{ display: 'none' }}
             />
             <label htmlFor="upload-button">
                 Upload Image
