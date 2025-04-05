@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import SleepForm from './SleepForm';
 import './App.css';
@@ -10,20 +10,24 @@ import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
 import logo from './assets/logo.svg';
 import { sendMsgToOpenAI } from './openai';
-import { useEffect, useRef, useState } from 'react';
 import ImageConverter from "./ImageConverter";
 
 function App() {
-  const msgEnd = useRef(null);
+  const msgEnd = useRef("");
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([{
     text: "Hi. I'm H.A.D, your Health Assistent Diagnoser. How can I assist you today?",
     isBot: true,
   }]);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [isThinking, setIsThinking] = useState(true);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
+  };
+
+  const toggleThinking = () => {
+    setIsThinking(!isThinking);
   };
 
   const mediaQuery = window.matchMedia('(max-width: 768px)');
@@ -85,11 +89,19 @@ function App() {
       { text, isBot: false },
     ]);
 
-    const res = await sendMsgToOpenAI(text);
-    setMessages((prevMessages) => [
-      ...prevMessages,
-      { text: res, isBot: true, typingAnimation: true },
-    ]);
+    if (isThinking) {
+      const res = await sendMsgToOpenAI(text);
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: res, isBot: true, typingAnimation: true },
+      ]);
+    } else {
+      setMessages((prevMessages) => [
+        ...prevMessages,
+        { text: "Thinking is turned off.", isBot: true },
+      ]);
+    }
+
     const chatContainer = document.querySelector('.chats');
 
     const checkAnimationInterval = setInterval(() => {
@@ -163,13 +175,13 @@ function App() {
                         >
                           <img className="chatImg" src={message.isBot ? logo : userIcon} alt=""/>
                           {message.text && (
-                              <p className="txt typing-animation" style={{whiteSpace: 'pre-line'}}>
+                              <p className="txt typing-animation" style={{ whiteSpace: 'pre-line' }}>
                                 {message.text.trim()}
                               </p>
                           )}
                         </div>
                     ))}
-                    <div ref={msgEnd}/>
+                    <div ref={msgEnd} />
                   </div>
                   <div className="chatFooter">
                     <div className="inp">
@@ -185,21 +197,24 @@ function App() {
                           }}
                       />
                       <button className="send" onClick={handleSend}>
-                        <img src={sendBtn} alt="Send"/>
+                        <img src={sendBtn} alt="Send" />
                       </button>
                     </div>
+                    <label className="switch">
+                      <input type="checkbox" checked={isThinking} onChange={toggleThinking} />
+                      <span className="slider round"></span>
+                    </label>
                     <p>H.A.D - The advice given is not medical advice, please consult a doctor </p>
                   </div>
                 </div>
-                  } />
-                  <Route path="/sleep" element={<SleepForm/>}/>
-                  <Route path="/cancer" element={<ImageConverter></ImageConverter>}/>
-                </Routes>
+              } />
+              <Route path="/sleep" element={<div className="own-css"><SleepForm /></div>} />
+              <Route path="/cancer" element={<div className="own-css"> <ImageConverter></ImageConverter></div>} />
+            </Routes>
+          </div>
+        </div>
+      </Router>
+  );
+}
 
-                </div>
-                </div>
-                </Router>
-                );
-              }
-
-                export default App;
+export default App;

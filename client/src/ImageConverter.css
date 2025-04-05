@@ -1,0 +1,63 @@
+/* ImageConverter.css */
+
+.image-converter-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%; /* Make it fit the screen width */
+    min-height: 100vh; /* Make it extend at least to the full viewport height */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+.image-upload-input {
+    display: none; /* Hide the default file input */
+}
+
+.image-upload-label {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 10px 0;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.image-upload-label:hover {
+    background-color: #367c39;
+}
+
+.uploaded-image {
+    max-width: 100%;
+    height: auto;
+    margin-top: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.base64-text {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    word-wrap: break-word; /* Ensures the text wraps */
+    font-size: 12px;
+    color: #555;
+    overflow-x: auto; /* Adds a horizontal scrollbar if the text is too long */
+    white-space: pre-wrap; /* Preserves line breaks and spaces */
+}
+
+.error-message {
+    color: red;
+    margin-top: 10px;
+    font-size: 14px;
+}
