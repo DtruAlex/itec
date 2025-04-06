@@ -6,25 +6,23 @@ import Col from 'react-bootstrap/Col';
 import './SleepForm.css';
 import { Button } from 'antd';
 
-function SleepForm() {
+function HeartAttackPredictor() {
     const [formData, setFormData] = useState({
-        "Person ID": 1,
-        "Age": 30,
-        "Gender": 'Male',
-        "Occupation": 'Programmer',
-        "Sleep Duration": 7.0,
-        "Quality of Sleep": 6.0,
-        "Physical Activity Level": 30,
-        "Stress Level": 6.0,
-        "BMI Category": 'Overweight',
-        "Blood Pressure": '140/90',
-        "Heart Rate": 80,
-        "Daily Steps": 5000,
+        age: 30,
+        gender: 'male',
+        occupation: 'Programmer',
+        sleep_duration: 7.0,
+        sleep_quality: 6.0,
+        stress: 6.0,
+        BMI: 'overweight',
+        blood_pressure: '140/90',
+        heart_rate: 80,
+        step_count: 5000,
     });
 
     const [response, setResponse] = useState({
-        final_response: '',
-        prediction: ''
+        diagnostic: '',
+        recommendations: ''
     });
 
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -33,9 +31,9 @@ function SleepForm() {
         const { name, value } = e.target;
         let parsedValue = value;
 
-        if (name === 'Heart Rate') {
+        if (name === 'heart_rate') {
             parsedValue = value;
-        } else if (name === 'Daily Steps') {
+        } else if (name === 'step_count') {
             parsedValue = value;
         }
 
@@ -47,7 +45,7 @@ function SleepForm() {
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        if (name === 'Heart Rate') {
+        if (name === 'heart_rate') {
             const parsedInt = parseInt(value, 10);
             let clampedValue = 40;
             if (!isNaN(parsedInt)) {
@@ -57,7 +55,7 @@ function SleepForm() {
                 ...prevState,
                 [name]: clampedValue
             }));
-        } else if (name === 'Daily Steps') {
+        } else if (name === 'step_count') {
             const parsedInt = parseInt(value, 10);
             let clampedValue = 0;
             if (!isNaN(parsedInt)) {
@@ -91,7 +89,7 @@ function SleepForm() {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://testbed-gpu.info.uvt.ro:1234/sleep/predict', {
+            const res = await fetch('http://127.0.0.1:8000/heart', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -102,8 +100,8 @@ function SleepForm() {
             if (res.ok) {
                 const data = await res.json();
                 setResponse({
-                    prediction: data.prediction,
-                    final_response: data.final_response
+                    diagnostic: data.diagnostic,
+                    recommendations: data.recommendations
                 });
                 setIsModalVisible(true); // Show the modal
                 console.log('Response:', data);
@@ -122,21 +120,21 @@ function SleepForm() {
 
     return (
         <div className="sleep-form-container">
-            <h1>Sleep Analyser</h1>
+            <h1>Heart Attack Predictor</h1>
             <form onSubmit={handleSubmit}>
                 <Container>
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Age ({formData.Age}):</label>
+                            <label>Age ({formData.age}):</label>
                         </Col>
                         <Col>
                             <Slider
-                                name="Age"
+                                name="age"
                                 style={{ width: '100%' }}
-                                value={formData.Age}
+                                value={formData.age}
                                 min={1}
                                 max={99}
-                                onChange={(value) => handleSliderChange("Age", value)}
+                                onChange={(value) => handleSliderChange("age", value)}
                                 valueLabelDisplay="auto"
                                 aria-labelledby="range-slider"
                                 className="sleep-form-slider"
@@ -146,7 +144,7 @@ function SleepForm() {
                     </Row>
                     <Row>
                         <Col>
-                            <label>Gender ({formData.Gender}):</label>
+                            <label>Gender ({formData.gender}):</label>
                         </Col>
                         <Row className="sleep-form-radio-row">
 
@@ -154,9 +152,9 @@ function SleepForm() {
                                 <label>
                                     <input
                                         type="radio"
-                                        name="Gender"
-                                        value="Male"
-                                        checked={formData.Gender === 'Male'}
+                                        name="gender"
+                                        value="male"
+                                        checked={formData.gender === 'male'}
                                         onChange={handleChange}
                                     />
                                     Male
@@ -164,9 +162,9 @@ function SleepForm() {
                                 <label>
                                     <input
                                         type="radio"
-                                        name="Gender"
-                                        value="Female"
-                                        checked={formData.Gender === 'Female'}
+                                        name="gender"
+                                        value="female"
+                                        checked={formData.gender === 'female'}
                                         onChange={handleChange}
                                     />
                                     Female
@@ -181,24 +179,24 @@ function SleepForm() {
                         <Col>
                             <input
                                 type="text"
-                                name="Occupation"
-                                value={formData.Occupation}
+                                name="occupation"
+                                value={formData.occupation}
                                 onChange={handleChange}
                             />
                         </Col>
                     </Row>
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Sleep Duration ({formData["Sleep Duration"]}):</label>
+                            <label>Sleep Duration ({formData.sleep_duration}):</label>
                         </Col>
                         <Col>
                             <Slider
                                 size="small"
-                                name="Sleep Duration"
-                                value={formData["Sleep Duration"]}
+                                name="sleep_duration"
+                                value={formData.sleep_duration}
                                 min={0}
                                 max={24}
-                                onChange={(value) => handleSliderChange("Sleep Duration", value)}
+                                onChange={(value) => handleSliderChange("sleep_duration", value)}
                                 valueLabelDisplay="auto"
                                 aria-labelledby="range-slider"
                                 className="sleep-form-slider"
@@ -209,16 +207,16 @@ function SleepForm() {
 
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Sleep Quality ({formData["Quality of Sleep"]}):</label>
+                            <label>Sleep Quality ({formData.sleep_quality}):</label>
                         </Col>
                         <Col>
                             <Slider
                                 size="small"
-                                name="Quality of Sleep"
-                                value={formData["Quality of Sleep"]}
+                                name="sleep_quality"
+                                value={formData.sleep_quality}
                                 min={0}
                                 max={9}
-                                onChange={(value) => handleSliderChange("Quality of Sleep", value)}
+                                onChange={(value) => handleSliderChange("sleep_quality", value)}
                                 valueLabelDisplay="auto"
                                 aria-labelledby="range-slider"
                                 className="sleep-form-slider"
@@ -229,36 +227,16 @@ function SleepForm() {
 
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Stress ({formData["Stress Level"]}):</label>
+                            <label>Stress ({formData.stress}):</label>
                         </Col>
                         <Col>
                             <Slider
                                 size="small"
-                                name="Stress Level"
-                                value={formData["Stress Level"]}
+                                name="stress"
+                                value={formData.stress}
                                 min={0}
                                 max={9}
-                                onChange={(value) => handleSliderChange("Stress Level", value)}
-                                valueLabelDisplay="auto"
-                                aria-labelledby="range-slider"
-                                className="sleep-form-slider"
-                                step={0.1}
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row className="sleep-form-row">
-                        <Col>
-                            <label>Physical Activity Level ({formData["Physical Activity Level"]}):</label>
-                        </Col>
-                        <Col>
-                            <Slider
-                                size="small"
-                                name="Physical Activity Level"
-                                value={formData["Physical Activity Level"]}
-                                min={0}
-                                max={99}
-                                onChange={(value) => handleSliderChange("Physical Activity Level", value)}
+                                onChange={(value) => handleSliderChange("stress", value)}
                                 valueLabelDisplay="auto"
                                 aria-labelledby="range-slider"
                                 className="sleep-form-slider"
@@ -269,16 +247,16 @@ function SleepForm() {
 
                     <Row>
                         <Col>
-                            <label>BMI ({formData["BMI Category"]}):</label>
+                            <label>BMI ({formData.BMI}):</label>
                         </Col>
                         <Row className="sleep-form-radio-row">
                             <Col>
                                 <label>
                                     <input
                                         type="radio"
-                                        name="BMI Category"
-                                        value="Normal"
-                                        checked={formData["BMI Category"] === 'Normal'}
+                                        name="BMI"
+                                        value="normal"
+                                        checked={formData.BMI === 'normal'}
                                         onChange={handleChange}
                                     />
                                     Normal
@@ -286,9 +264,9 @@ function SleepForm() {
                                 <label>
                                     <input
                                         type="radio"
-                                        name="BMI Category"
-                                        value="Overweight"
-                                        checked={formData["BMI Category"] === 'Overweight'}
+                                        name="BMI"
+                                        value="overweight"
+                                        checked={formData.BMI === 'overweight'}
                                         onChange={handleChange}
                                     />
                                     Overweight
@@ -296,12 +274,12 @@ function SleepForm() {
                                 <label>
                                     <input
                                         type="radio"
-                                        name="BMI Category"
-                                        value="Obese"
-                                        checked={formData["BMI Category"] === 'Obese'}
+                                        name="BMI"
+                                        value="other"
+                                        checked={formData.BMI === 'other'}
                                         onChange={handleChange}
                                     />
-                                    Obese
+                                    Other
                                 </label>
                             </Col>
                         </Row>
@@ -313,8 +291,8 @@ function SleepForm() {
                             <Col>
                                 <input
                                     type="text"
-                                    name="Blood Pressure"
-                                    value={formData["Blood Pressure"]}
+                                    name="blood_pressure"
+                                    value={formData.blood_pressure}
                                     onChange={handleBloodPressureChange}
                                     placeholder="XXX/YYY"
                                 />
@@ -329,8 +307,8 @@ function SleepForm() {
                         <Col>
                             <input
                                 type="number"
-                                name="Heart Rate"
-                                value={formData["Heart Rate"]}
+                                name="heart_rate"
+                                value={formData.heart_rate}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                                 min="40"
@@ -346,8 +324,8 @@ function SleepForm() {
                         <Col>
                             <input
                                 type="number"
-                                name="Daily Steps"
-                                value={formData["Daily Steps"]}
+                                name="step_count"
+                                value={formData.step_count}
                                 onChange={handleChange}
                                 onBlur={handleBlur}
                             />
@@ -360,7 +338,7 @@ function SleepForm() {
                 </Container>
             </form>
             <Modal
-                title="Sleep Analysis"
+                title="Stroke Prediction"
                 visible={isModalVisible}
                 onOk={handleOk}
                 footer={[
@@ -370,12 +348,12 @@ function SleepForm() {
                 ]}
             >
                 <h3>Diagnostic:</h3>
-                <p>{response.prediction}</p>
+                <p>{response.diagnostic}</p>
                 <h3>Recommendations:</h3>
-                <p>{response.final_response}</p>
+                <p>{response.recommendations}</p>
             </Modal>
         </div>
     );
 }
 
-export default SleepForm;
+export default HeartAttackPredictor;

@@ -11,6 +11,9 @@ import userIcon from './assets/user-icon.png';
 import logo from './assets/logo.svg';
 import { sendMsgToOpenAI } from './openai';
 import ImageConverter from "./ImageConverter";
+import StrokePredictor from "./StrokePredictor";
+import HeartAttackPredictor from "./HeartAttackPredictor";
+import PulmonaryProblems from "./PulmonaryProblems";
 
 function App() {
   const msgEnd = useRef("");
@@ -158,6 +161,18 @@ function App() {
                     Cancer Detector
                   </div>
                 </Link>
+                <Link to="/stroke" className='links'>
+                  <div className="listItems">
+                    <img src={dna} alt="StrokePredictor" className="listItemsImg" />
+                    Stroke Predictor
+                  </div>
+                </Link>
+                <Link to="/heart" className='links'>
+                  <div className="listItems">
+                    <img src={dna} alt="HeartAttackPredictor" className="listItemsImg" />
+                    Heart Attack Predictor
+                  </div>
+                </Link>
               </div>
             </div>
           </div>
@@ -210,6 +225,9 @@ function App() {
               } />
               <Route path="/sleep" element={<div className="own-css"><SleepForm /></div>} />
               <Route path="/cancer" element={<div className="own-css"> <ImageConverter></ImageConverter></div>} />
+              <Route path="/heart" element={<div className="own-css"> <HeartAttackPredictor></HeartAttackPredictor></div>} />
+              <Route path="/stroke" element={<div className="own-css"> <StrokePredictor></StrokePredictor></div>} />
+              <Route path="/pulmonary" element={<div className="own-css"> <PulmonaryProblems></PulmonaryProblems></div>} />
             </Routes>
           </div>
         </div>
