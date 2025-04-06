@@ -1,95 +1,53 @@
 import React, { useState } from 'react';
-import { Slider, Modal } from "antd";
+import { Slider, Modal, Select } from "antd";
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import './SleepForm.css';
 import { Button } from 'antd';
 
+const { Option } = Select;
+
 function StrokePredictor() {
     const [formData, setFormData] = useState({
-        age: 30,
-        gender: 'male',
-        occupation: 'Programmer',
-        sleep_duration: 7.0,
-        sleep_quality: 6.0,
-        stress: 6.0,
-        BMI: 'overweight',
-        blood_pressure: '140/90',
-        heart_rate: 80,
-        step_count: 5000,
+        gender: 1,
+        age: 67.0,
+        hypertension: 0,
+        heart_disease: 1,
+        ever_married: 1,
+        work_type: 2,
+        Residence_type: 1,
+        avg_glucose_level: 228.69,
+        bmi: 36.6,
+        smoking_status: 2
     });
 
     const [response, setResponse] = useState({
-        diagnostic: '',
-        recommendations: ''
+        probability_of_stroke: '',
+        stroke_prediction: ''
     });
 
     const [isModalVisible, setIsModalVisible] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        let parsedValue = value;
-
-        if (name === 'heart_rate') {
-            parsedValue = value;
-        } else if (name === 'step_count') {
-            parsedValue = value;
-        }
-
+    const handleChange = (name, value) => {
         setFormData(prevState => ({
             ...prevState,
-            [name]: parsedValue
+            [name]: value
         }));
     };
-
-    const handleBlur = (e) => {
-        const { name, value } = e.target;
-        if (name === 'heart_rate') {
-            const parsedInt = parseInt(value, 10);
-            let clampedValue = 40;
-            if (!isNaN(parsedInt)) {
-                clampedValue = Math.max(40, Math.min(200, parsedInt));
-            }
-            setFormData(prevState => ({
-                ...prevState,
-                [name]: clampedValue
-            }));
-        } else if (name === 'step_count') {
-            const parsedInt = parseInt(value, 10);
-            let clampedValue = 0;
-            if (!isNaN(parsedInt)) {
-                clampedValue = parsedInt;
-            }
-            setFormData(prevState => ({
-                ...prevState,
-                [name]: clampedValue
-            }));
-        }
-    };
-
 
     const handleSliderChange = (name, value) => {
         setFormData(prevState => ({
             ...prevState,
-            [name]: parseFloat(value)
+            [name]: value
         }));
     };
-
-    const handleBloodPressureChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prevState => ({
-            ...prevState,
-            [name]: value.replace(/[^0-9\/]/g, '') // Only allow numbers and '/'
-        }));
-    };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://127.0.0.1:8000/stroke', {
+            const res = await fetch('http://testbed-gpu.info.uvt.ro:1234/stroke/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -100,10 +58,10 @@ function StrokePredictor() {
             if (res.ok) {
                 const data = await res.json();
                 setResponse({
-                    diagnostic: data.diagnostic,
-                    recommendations: data.recommendations
+                    probability_of_stroke: data.probability_of_stroke,
+                    stroke_prediction: data.stroke_prediction
                 });
-                setIsModalVisible(true); // Show the modal
+                setIsModalVisible(true);
                 console.log('Response:', data);
             } else {
                 console.error('Error:', res.status);
@@ -117,13 +75,28 @@ function StrokePredictor() {
         setIsModalVisible(false);
     };
 
-
     return (
-
         <div className="sleep-form-container">
             <h1>Stroke Predictor</h1>
             <form onSubmit={handleSubmit}>
                 <Container>
+                    <Row className="sleep-form-row">
+                        <Col>
+                            <label>Gender:</label>
+                        </Col>
+                        <Col>
+                            <Select
+                                name="gender"
+                                value={formData.gender}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("gender", value)}
+                            >
+                                <Option value={0}>Female</Option>
+                                <Option value={1}>Male</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+
                     <Row className="sleep-form-row">
                         <Col>
                             <label>Age ({formData.age}):</label>
@@ -131,205 +104,152 @@ function StrokePredictor() {
                         <Col>
                             <Slider
                                 name="age"
-                                style={{width: '100%'}}
+                                style={{ width: '100%' }}
                                 value={formData.age}
-                                min={1}
-                                max={99}
+                                min={0}
+                                max={100}
+                                step={0.1}
                                 onChange={(value) => handleSliderChange("age", value)}
-                                valueLabelDisplay="auto"
-                                aria-labelledby="range-slider"
-                                className="sleep-form-slider"
-                                step={1}
                             />
                         </Col>
                     </Row>
-                    <Row>
-                        <Col>
-                            <label>Gender ({formData.gender}):</label>
-                        </Col>
-                        <Row className="sleep-form-radio-row">
 
-                            <Col>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        value="male"
-                                        checked={formData.gender === 'male'}
-                                        onChange={handleChange}
-                                    />
-                                    Male
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        value="female"
-                                        checked={formData.gender === 'female'}
-                                        onChange={handleChange}
-                                    />
-                                    Female
-                                </label>
-                            </Col>
-                        </Row>
-                    </Row>
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Occupation:</label>
+                            <label>Hypertension:</label>
                         </Col>
                         <Col>
-                            <input
-                                type="text"
-                                name="occupation"
-                                value={formData.occupation}
-                                onChange={handleChange}
-                            />
+                            <Select
+                                name="hypertension"
+                                value={formData.hypertension}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("hypertension", value)}
+                            >
+                                <Option value={0}>No</Option>
+                                <Option value={1}>Yes</Option>
+                            </Select>
                         </Col>
                     </Row>
+
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Sleep Duration ({formData.sleep_duration}):</label>
+                            <label>Heart Disease:</label>
+                        </Col>
+                        <Col>
+                            <Select
+                                name="heart_disease"
+                                value={formData.heart_disease}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("heart_disease", value)}
+                            >
+                                <Option value={0}>No</Option>
+                                <Option value={1}>Yes</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+
+                    <Row className="sleep-form-row">
+                        <Col>
+                            <label>Ever Married:</label>
+                        </Col>
+                        <Col>
+                            <Select
+                                name="ever_married"
+                                value={formData.ever_married}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("ever_married", value)}
+                            >
+                                <Option value={0}>No</Option>
+                                <Option value={1}>Yes</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+
+                    <Row className="sleep-form-row">
+                        <Col>
+                            <label>Work Type:</label>
+                        </Col>
+                        <Col>
+                            <Select
+                                name="work_type"
+                                value={formData.work_type}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("work_type", value)}
+                            >
+                                <Option value={0}>Private</Option>
+                                <Option value={1}>Self-employed</Option>
+                                <Option value={2}>Govt_job</Option>
+                                <Option value={3}>children</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+
+                    <Row className="sleep-form-row">
+                        <Col>
+                            <label>Residence Type:</label>
+                        </Col>
+                        <Col>
+                            <Select
+                                name="Residence_type"
+                                value={formData.Residence_type}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("Residence_type", value)}
+                            >
+                                <Option value={0}>Rural</Option>
+                                <Option value={1}>Urban</Option>
+                            </Select>
+                        </Col>
+                    </Row>
+
+                    <Row className="sleep-form-row">
+                        <Col>
+                            <label>Average Glucose Level ({formData.avg_glucose_level}):</label>
                         </Col>
                         <Col>
                             <Slider
-                                size="small"
-                                name="sleep_duration"
-                                value={formData.sleep_duration}
-                                min={0}
-                                max={24}
-                                onChange={(value) => handleSliderChange("sleep_duration", value)}
-                                valueLabelDisplay="auto"
-                                aria-labelledby="range-slider"
-                                className="sleep-form-slider"
-                                step={0.1}
+                                name="avg_glucose_level"
+                                style={{ width: '100%' }}
+                                value={formData.avg_glucose_level}
+                                min={50}
+                                max={300}
+                                step={0.01}
+                                onChange={(value) => handleSliderChange("avg_glucose_level", value)}
                             />
                         </Col>
                     </Row>
 
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Sleep Quality ({formData.sleep_quality}):</label>
+                            <label>BMI ({formData.bmi}):</label>
                         </Col>
                         <Col>
                             <Slider
-                                size="small"
-                                name="sleep_quality"
-                                value={formData.sleep_quality}
-                                min={0}
-                                max={9}
-                                onChange={(value) => handleSliderChange("sleep_quality", value)}
-                                valueLabelDisplay="auto"
-                                aria-labelledby="range-slider"
-                                className="sleep-form-slider"
+                                name="bmi"
+                                style={{ width: '100%' }}
+                                value={formData.bmi}
+                                min={10}
+                                max={50}
                                 step={0.1}
+                                onChange={(value) => handleSliderChange("bmi", value)}
                             />
                         </Col>
                     </Row>
 
                     <Row className="sleep-form-row">
                         <Col>
-                            <label>Stress ({formData.stress}):</label>
+                            <label>Smoking Status:</label>
                         </Col>
                         <Col>
-                            <Slider
-                                size="small"
-                                name="stress"
-                                value={formData.stress}
-                                min={0}
-                                max={9}
-                                onChange={(value) => handleSliderChange("stress", value)}
-                                valueLabelDisplay="auto"
-                                aria-labelledby="range-slider"
-                                className="sleep-form-slider"
-                                step={0.1}
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row>
-                        <Col>
-                            <label>BMI ({formData.BMI}):</label>
-                        </Col>
-                        <Row className="sleep-form-radio-row">
-                            <Col>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="BMI"
-                                        value="normal"
-                                        checked={formData.BMI === 'normal'}
-                                        onChange={handleChange}
-                                    />
-                                    Normal
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="BMI"
-                                        value="overweight"
-                                        checked={formData.BMI === 'overweight'}
-                                        onChange={handleChange}
-                                    />
-                                    Overweight
-                                </label>
-                                <label>
-                                    <input
-                                        type="radio"
-                                        name="BMI"
-                                        value="other"
-                                        checked={formData.BMI === 'other'}
-                                        onChange={handleChange}
-                                    />
-                                    Other
-                                </label>
-                            </Col>
-                        </Row>
-
-                        <Row className="sleep-form-row">
-                            <Col>
-                                <label>Blood Pressure:</label>
-                            </Col>
-                            <Col>
-                                <input
-                                    type="text"
-                                    name="blood_pressure"
-                                    value={formData.blood_pressure}
-                                    onChange={handleBloodPressureChange}
-                                    placeholder="XXX/YYY"
-                                />
-                            </Col>
-                        </Row>
-                    </Row>
-
-                    <Row className="sleep-form-row">
-                        <Col>
-                            <label>Heart Rate:</label>
-                        </Col>
-                        <Col>
-                            <input
-                                type="number"
-                                name="heart_rate"
-                                value={formData.heart_rate}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                                min="40"
-                                max="200"
-                            />
-                        </Col>
-                    </Row>
-
-                    <Row className="sleep-form-row">
-                        <Col>
-                            <label>Step Count:</label>
-                        </Col>
-                        <Col>
-                            <input
-                                type="number"
-                                name="step_count"
-                                value={formData.step_count}
-                                onChange={handleChange}
-                                onBlur={handleBlur}
-                            />
+                            <Select
+                                name="smoking_status"
+                                value={formData.smoking_status}
+                                style={{ width: '100%' }}
+                                onChange={(value) => handleChange("smoking_status", value)}
+                            >
+                                <Option value={0}>never smoked</Option>
+                                <Option value={1}>formerly smoked</Option>
+                                <Option value={2}>smokes</Option>
+                            </Select>
                         </Col>
                     </Row>
 
@@ -348,10 +268,10 @@ function StrokePredictor() {
                     </Button>,
                 ]}
             >
-                <h3>Diagnostic:</h3>
-                <p>{response.diagnostic}</p>
-                <h3>Recommendations:</h3>
-                <p>{response.recommendations}</p>
+                <h3>Probability of Stroke:</h3>
+                <p>{response.probability_of_stroke}</p>
+                <h3>Stroke prediction:</h3>
+                <p>{response.stroke_prediction}</p>
             </Modal>
         </div>
     );

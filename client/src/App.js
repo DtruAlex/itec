@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import SleepForm from './SleepForm';
 import './App.css';
-import addBtn from './assets/add-30.png';
+import chat from './assets/chat.svg';
 import sleep from './assets/sleep.svg';
 import dna from './assets/dna.svg';
 import rocket from './assets/rocket.svg';
@@ -145,7 +145,7 @@ function App() {
               <div className="lowerSide">
                 <Link to="/" className='links'>
                   <div className="listItems">
-                    <img src={sleep} alt="H.A.D Chat" className="listItemsImg" />
+                    <img src={chat} alt="H.A.D Chat" className="listItemsImg" />
                     Chat with H.A.D
                   </div>
                 </Link>
