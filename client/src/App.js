@@ -5,15 +5,17 @@ import './App.css';
 import chat from './assets/chat.svg';
 import sleep from './assets/sleep.svg';
 import dna from './assets/dna.svg';
-import rocket from './assets/rocket.svg';
+import heart from './assets/heart.svg';
+import brain from './assets/brain.svg';
+import lungs from './assets/lungs.svg';
 import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
 import logo from './assets/logo.svg';
-import {sendMsgToAI, sendMsgToOpenAI} from './openai';
+import {sendMsgToAI, sendMsgToOpenAI} from './llm';
 import ImageConverter from "./ImageConverter";
 import StrokePredictor from "./StrokePredictor";
 import HeartAttackPredictor from "./HeartAttackPredictor";
-import PulmonaryProblems from "./PulmonaryProblems";
+
 
 function App() {
   const msgEnd = useRef("");
@@ -23,14 +25,9 @@ function App() {
     isBot: true,
   }]);
   const [showSidebar, setShowSidebar] = useState(true);
-  const [isThinking, setIsThinking] = useState(true);
 
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
-  };
-
-  const toggleThinking = () => {
-    setIsThinking(!isThinking);
   };
 
   const mediaQuery = window.matchMedia('(max-width: 768px)');
@@ -92,18 +89,11 @@ function App() {
       { text, isBot: false },
     ]);
 
-    if (isThinking) {
-      const res = await sendMsgToAI(text);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: res, isBot: true, typingAnimation: true },
-      ]);
-    } else {
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { text: "Thinking is turned off.", isBot: true },
-      ]);
-    }
+    const res = await sendMsgToAI(text);
+    setMessages((prevMessages) => [
+      ...prevMessages,
+      { text: res, isBot: true, typingAnimation: true },
+    ]);
 
     const chatContainer = document.querySelector('.chats');
 
@@ -163,20 +153,14 @@ function App() {
                 </Link>
                 <Link to="/stroke" className='links'>
                   <div className="listItems">
-                    <img src={dna} alt="StrokePredictor" className="listItemsImg" />
+                    <img src={brain} alt="StrokePredictor" className="listItemsImg" />
                     Stroke Predictor
                   </div>
                 </Link>
                 <Link to="/heart" className='links'>
                   <div className="listItems">
-                    <img src={dna} alt="HeartAttackPredictor" className="listItemsImg" />
+                    <img src={heart} alt="HeartAttackPredictor" className="listItemsImg" />
                     Heart Attack Predictor
-                  </div>
-                </Link>
-                <Link to="/pulmonary" className='links'>
-                  <div className="listItems">
-                    <img src={dna} alt="pulmonary" className="listItemsImg" />
-                    Pulmonary Problmes Detector
                   </div>
                 </Link>
               </div>
@@ -221,10 +205,6 @@ function App() {
                         <img src={sendBtn} alt="Send" />
                       </button>
                     </div>
-                    <label className="switch">
-                      <input type="checkbox" checked={isThinking} onChange={toggleThinking} />
-                      <span className="slider round"></span>
-                    </label>
                     <p>H.A.D - The advice given is not medical advice, please consult a doctor </p>
                   </div>
                 </div>
@@ -233,7 +213,6 @@ function App() {
               <Route path="/cancer" element={<div className="own-css"> <ImageConverter></ImageConverter></div>} />
               <Route path="/heart" element={<div className="own-css"> <HeartAttackPredictor></HeartAttackPredictor></div>} />
               <Route path="/stroke" element={<div className="own-css"> <StrokePredictor></StrokePredictor></div>} />
-              <Route path="/pulmonary" element={<div className="own-css"> <PulmonaryProblems></PulmonaryProblems></div>} />
             </Routes>
           </div>
         </div>

@@ -44,19 +44,20 @@ function ImageConvertor() {
             return;
         }
         base64Image = base64Image.replace(/^data:image\/[a-zA-Z]+;base64,/, '');
+        console.log(base64Image);
         console.log("IN handleSubmit");
         try {
-            const res = await fetch('http://127.0.0.1:8000/cancer', {
+            const res = await fetch('http://testbed-gpu.info.uvt.ro:5000/predict', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ image_data: base64Image }),
+                body: JSON.stringify({ image_base64: base64Image }),
             });
             console.log("fetch done");
             if (res.ok) {
-                const data = await res.text();
-                setResponse(data);
+                const data = await res.json();
+                setResponse(data.predicted_class);
                 setIsModalVisible(true);
                 setErrorMessage(''); // Clear any previous error messages
             } else {
@@ -78,6 +79,23 @@ function ImageConvertor() {
 
     const handleOk = () => {
         setIsModalVisible(false);
+    };
+
+    const responseMap = {
+        'all_benign': { label: 'Benign', description: 'Non-cancerous, healthy cells' },
+        'all_early': { label: 'Early', description: 'Early stages of leukemia' },
+        'all_pre': { label: 'Pre', description: 'Pre-stage abnormal cells' },
+        'all_pro': { label: 'Pro', description: 'Advanced leukemia cells' },
+    };
+
+    const getAnalysisResult = () => {
+        const result = responseMap[response] || { label: 'Unknown', description: 'Could not determine the result.' };
+        return (
+            <div>
+                <p><strong>Result:</strong> {result.label}</p>
+                <p><strong>Description:</strong> {result.description}</p>
+            </div>
+        );
     };
 
     return (
@@ -111,7 +129,7 @@ function ImageConvertor() {
                     </Button>,
                 ]}
             >
-                <p>{response}</p>
+                {getAnalysisResult()}
             </Modal>
         </div>
     );
