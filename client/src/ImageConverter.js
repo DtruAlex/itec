@@ -82,6 +82,7 @@ function ImageConvertor() {
 
     return (
         <div className="image-converter-container">
+            <h1 style={{color:"black"}}>Acute Lymphocytic Leukemia Detector</h1>
             <input
                 type="file"
                 accept="image/*"

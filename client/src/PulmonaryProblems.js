@@ -22,9 +22,11 @@ function PulmonaryProblems() {
         const file = e.target.files[0];
         setSelectedAudio(file);
         if (file) {
+            console.log("file is here yes");
             try {
                 const base64 = await convertToBase64(file);
                 setBase64Audio(base64);
+                console.log("base64 set and converted");
                 setErrorMessage('');
             } catch (error) {
                 console.error("Error converting audio to base64:", error);
@@ -42,6 +44,7 @@ function PulmonaryProblems() {
             setErrorMessage('Please upload an audio file.');
             return;
         }
+        // Ensure the base64 string is in the correct format
         // Remove the data URL prefix
         const base64Data = base64Audio.replace(/^data:audio\/[a-zA-Z0-9]+;base64,/, '');
 
@@ -53,7 +56,7 @@ function PulmonaryProblems() {
                 },
                 body: JSON.stringify({ audio_data: base64Data }),
             });
-
+            console.log("fetch done");
             if (res.ok) {
                 const data = await res.text();
                 setResponse(data);
@@ -82,6 +85,7 @@ function PulmonaryProblems() {
 
     return (
         <div className="image-converter-container">
+            <h1 style={{color: "black"}}>Pulmonary Problems Detector</h1>
             <input
                 type="file"
                 accept="audio/*"
@@ -95,7 +99,7 @@ function PulmonaryProblems() {
             {errorMessage && <div className="error-message">{errorMessage}</div>}
             {selectedAudio && (
                 <audio controls>
-                    <source src={base64Audio} type={selectedAudio.type} />
+                    <source src={base64Audio} type={selectedAudio.type}/>
                     Your browser does not support the audio element.
                 </audio>
             )}

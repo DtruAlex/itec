@@ -23,7 +23,7 @@ function SleepForm() {
     });
 
     const [response, setResponse] = useState({
-        final_response: '',
+        response: '',
         prediction: ''
     });
 
@@ -101,9 +101,10 @@ function SleepForm() {
 
             if (res.ok) {
                 const data = await res.json();
+                console.log('Data:', data);
                 setResponse({
                     prediction: data.prediction,
-                    final_response: data.final_response
+                    response: data.response
                 });
                 setIsModalVisible(true); // Show the modal
                 console.log('Response:', data);
@@ -372,7 +373,7 @@ function SleepForm() {
                 <h3>Diagnostic:</h3>
                 <p>{response.prediction}</p>
                 <h3>Recommendations:</h3>
-                <p>{response.final_response}</p>
+                <p>{response.response}</p>
             </Modal>
         </div>
     );

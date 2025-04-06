@@ -9,7 +9,7 @@ import rocket from './assets/rocket.svg';
 import sendBtn from './assets/send.svg';
 import userIcon from './assets/user-icon.png';
 import logo from './assets/logo.svg';
-import { sendMsgToOpenAI } from './openai';
+import {sendMsgToAI, sendMsgToOpenAI} from './openai';
 import ImageConverter from "./ImageConverter";
 import StrokePredictor from "./StrokePredictor";
 import HeartAttackPredictor from "./HeartAttackPredictor";
@@ -93,7 +93,7 @@ function App() {
     ]);
 
     if (isThinking) {
-      const res = await sendMsgToOpenAI(text);
+      const res = await sendMsgToAI(text);
       setMessages((prevMessages) => [
         ...prevMessages,
         { text: res, isBot: true, typingAnimation: true },
@@ -158,7 +158,7 @@ function App() {
                 <Link to="/cancer" className='links'>
                   <div className="listItems">
                     <img src={dna} alt="CancerDetector" className="listItemsImg" />
-                    Cancer Detector
+                    Acute Lymphocytic Leukemia Detector
                   </div>
                 </Link>
                 <Link to="/stroke" className='links'>
@@ -171,6 +171,12 @@ function App() {
                   <div className="listItems">
                     <img src={dna} alt="HeartAttackPredictor" className="listItemsImg" />
                     Heart Attack Predictor
+                  </div>
+                </Link>
+                <Link to="/pulmonary" className='links'>
+                  <div className="listItems">
+                    <img src={dna} alt="pulmonary" className="listItemsImg" />
+                    Pulmonary Problmes Detector
                   </div>
                 </Link>
               </div>
