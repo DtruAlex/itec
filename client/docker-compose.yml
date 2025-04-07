@@ -1,0 +1,15 @@
+services:
+  frontend:
+    container_name: 'H.A.D-frontend'
+    build:
+      context: .
+      dockerfile: Dockerfile
+    expose:
+      - 3000
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/opt/react_app/app
+    tty: true
+    working_dir: /opt/react_app/app
+    command: "npm start"
