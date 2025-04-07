@@ -29,7 +29,7 @@ erase: ## Erase containers with related volumes
 .PHONY: erase
 
 install-npm:
-	$(exec) npm install
+	$(run) frontend npm install
 .PHONY: install-npm
 
 update-code: ## Update project submodules
@@ -41,8 +41,7 @@ update-submodules: ## Update project submodules
 .PHONY: update-submodules
 
 build-frontend:
-	$(exec) npm run build
+	$(run) npm run build
 .PHONY: build-frontend
 
-init:
-    install-npm start
+init: install-npm start
